@@ -165,7 +165,7 @@ namespace CreateExercises
 
             var max = collEx.Find(new BsonDocument()).Sort(new BsonDocument("Exercise_ID", -1)).FirstOrDefault();
             Int32 ex_ID = max.GetElement("Exercise_ID").Value.ToInt32();
-            ex_ID++;
+            
 
             var document = new BsonDocument { { "Routine_id", w.Id },
                 { "Exercise_ID", ex_ID} ,
@@ -188,6 +188,17 @@ namespace CreateExercises
                 { "Exercise_ID", ex_ID} ,
                 { "Exercise Name", name} };
             collection.InsertOne(document);
+        }
+
+        public static void Delete_Exercise(int Exercise_ID)
+        {
+            MongoClient dbClient = new MongoClient(Properties.Settings.Default.MongoDB);
+            var database = dbClient.GetDatabase("ExerciseDB");
+            var collection = database.GetCollection<BsonDocument>("Exercises");
+            var collectionA = database.GetCollection<BsonDocument>("Routines");
+            var deleteFilter = Builders<BsonDocument>.Filter.Eq("Exercise_ID", Exercise_ID);
+            collection.DeleteOne(deleteFilter);
+            collectionA.DeleteMany(deleteFilter);
         }
 
         public static void Make_Result_Base(WorkOut w,int Type_ID ,string ExName)
@@ -213,7 +224,7 @@ namespace CreateExercises
 
             foreach (Given_Rule g in gr)
             {
-                if (w.Name.Contains(g.Exercise) && (g.Exercise_ID == Type_ID))
+                if (w.Name.Contains(g.Exercise) && (g.Exercise_ID == Type_ID || Type_ID == 4 ))
                 {
                     ResultBase rb = new ResultBase();
                     rb.Match = true;

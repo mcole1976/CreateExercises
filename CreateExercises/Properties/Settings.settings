@@ -9,5 +9,11 @@
 &lt;/SerializableConnectionString&gt;</DesignTimeValue>
       <Value Profile="(Default)">mongodb://localhost:27017/?readPreference=primary&amp;appname=MongoDB%20Compass&amp;ssl=false</Value>
     </Setting>
+    <Setting Name="FB_Cal_Ratio" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">14</Value>
+    </Setting>
+    <Setting Name="EX_Cal_Ratio" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">12</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

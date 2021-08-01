@@ -255,5 +255,68 @@ namespace CreateExercises
 
             
         }
+
+        public static void Make_Log_Entry(int Type_ID, int Ex_Id, double time)
+        {
+            Dictionary<int, string> exTypes = Exercise_Types_List();
+
+            string exType = (from exT in exTypes where exT.Key == Type_ID select exT.Value).FirstOrDefault();
+
+            MongoClient dbClient = new MongoClient(Properties.Settings.Default.MongoDB);
+
+            var database = dbClient.GetDatabase("ExerciseDB");
+            var collB = database.GetCollection<BsonDocument>("Exercise_Log");
+
+            DateTime dt = DateTime.Now;
+            DateTime ut = DateTime.SpecifyKind(dt, DateTimeKind.Utc);
+            var docb = new BsonDocument {
+                                { "Exercise_ID" ,Ex_Id},
+                                {"Calorie_ Count", fn_SetCalCount(Type_ID, time) },
+                                {"Exercise_Date", ut},
+                                {"Exercise_Time",time }
+                               
+                            };
+            collB.InsertOne(docb);
+        }
+
+        public static void Make_Food_Entry(ExerciseMethodShareDtNt.Food_Log f)
+        {
+            Dictionary<int, string> exTypes = Exercise_Types_List();
+
+            
+
+            MongoClient dbClient = new MongoClient(Properties.Settings.Default.MongoDB);
+
+            var database = dbClient.GetDatabase("ExerciseDB");
+            var collB = database.GetCollection<BsonDocument>("Food_Diary");
+
+            DateTime dt = DateTime.Now;
+            DateTime ut = DateTime.SpecifyKind(dt, DateTimeKind.Utc);
+            var docb = new BsonDocument {
+                                { "Meal" ,f.Meal},
+                                {"Calorie_ Count", f.Calorie_Count },
+                                {"Consumption_Date", ut},
+                                {"Meal_Description",f.Meal_Description }
+
+                            };
+            collB.InsertOne(docb);
+        }
+
+
+
+        private static int fn_SetCalCount(int type_ID, double time)
+        {
+            double ratio = 0;
+            if (type_ID == 4)
+            {
+                ratio = Properties.Settings.Default.FB_Cal_Ratio;
+                    }
+            else
+            {
+                ratio = Properties.Settings.Default.EX_Cal_Ratio;
+            }
+
+            return (int)(time * ratio);
+        }
     }
 }

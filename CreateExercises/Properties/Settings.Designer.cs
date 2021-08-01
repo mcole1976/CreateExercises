@@ -33,5 +33,23 @@ namespace CreateExercises.Properties {
                 return ((string)(this["MongoDB"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("14")]
+        public int FB_Cal_Ratio {
+            get {
+                return ((int)(this["FB_Cal_Ratio"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("12")]
+        public int EX_Cal_Ratio {
+            get {
+                return ((int)(this["EX_Cal_Ratio"]));
+            }
+        }
     }
 }

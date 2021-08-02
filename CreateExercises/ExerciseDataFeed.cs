@@ -174,7 +174,7 @@ namespace CreateExercises
             collection.InsertOne(document);
         }
 
-        public static void Make_Exercise_Regiment(int Exercise_Type_ID, string name)
+        public static void Make_Exercise_Regiment(int Exercise_Type_ID, string name, int exTime)
         {
             MongoClient dbClient = new MongoClient(Properties.Settings.Default.MongoDB);
             var database = dbClient.GetDatabase("ExerciseDB");
@@ -186,7 +186,8 @@ namespace CreateExercises
             ex_ID++;
             var document = new BsonDocument { { "Exercise_Type_Id", Exercise_Type_ID }, 
                 { "Exercise_ID", ex_ID} ,
-                { "Exercise Name", name} };
+                { "Exercise Name", name} ,
+                { "Exercise_Time", exTime} };
             collection.InsertOne(document);
         }
 

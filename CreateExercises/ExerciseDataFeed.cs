@@ -40,7 +40,7 @@ namespace CreateExercises
             return rb;
         }
 
-        public static List<Given_Rule > RuleList()
+        public static List<Given_Rule> RuleList()
         {
             List<Given_Rule> res = new List<Given_Rule>();
             MongoClient dbClient = new MongoClient(Properties.Settings.Default.MongoDB);
@@ -69,8 +69,8 @@ namespace CreateExercises
         }
 
         public static Dictionary<int, string> Exercise_Types_List()
-        { 
-          
+        {
+
             MongoClient dbClient = new MongoClient(Properties.Settings.Default.MongoDB);
 
             Dictionary<int, String> res = new Dictionary<int, string>();
@@ -137,7 +137,7 @@ namespace CreateExercises
 
             var Documents = collection.Find(filter).ToList();
 
-            foreach(BsonDocument bd in Documents)
+            foreach (BsonDocument bd in Documents)
             {
                 WorkOut w = new WorkOut();
 
@@ -152,6 +152,78 @@ namespace CreateExercises
 
 
             return res;
+        }
+
+        public static List<Food_Log> FoodLogs()
+            {
+
+            List<Food_Log> res = new List<Food_Log>();
+
+            MongoClient dbClient = new MongoClient(Properties.Settings.Default.MongoDB);
+
+            //Dictionary<int, String> res = new Dictionary<int, string>();
+
+            var database = dbClient.GetDatabase("ExerciseDB");
+            var collection = database.GetCollection<BsonDocument>("Food_Log");
+
+            //var filter = Builders<BsonDocument>.Filter.Eq("Exercise_ID", ExID);
+
+            var Documents = collection.Find(new BsonDocument()).ToList(); ;
+
+            foreach (BsonDocument bd in Documents)
+            {
+                Food_Log f = new Food_Log();
+
+
+                f.Meal = bd.GetElement("Meal").Value.ToString();
+                f.Meal_Description = bd.GetElement("Meal_Description").Value.ToString();
+                f.Calorie_Count = bd.GetElement("Calorie_Count").Value.ToInt32();
+                f.Date = bd.GetElement("Consumption_Date").Value.ToUniversalTime();
+                //res.Add(id, exName);
+                res.Add(f);
+            }
+
+
+
+            return res;
+
+
+        }
+
+        public static List<Exercise_Log> ExerciseLogs()
+        {
+
+            List<Exercise_Log> res = new List<Exercise_Log>();
+
+            MongoClient dbClient = new MongoClient(Properties.Settings.Default.MongoDB);
+
+            //Dictionary<int, String> res = new Dictionary<int, string>();
+
+            var database = dbClient.GetDatabase("ExerciseDB");
+            var collection = database.GetCollection<BsonDocument>("Exercise_Log");
+
+            //var filter = Builders<BsonDocument>.Filter.Eq("Exercise_ID", ExID);
+
+            var Documents = collection.Find(new BsonDocument()).ToList(); ;
+
+            foreach (BsonDocument bd in Documents)
+            {
+                Exercise_Log ex = new Exercise_Log();
+
+
+                ex.Exercise_ID = bd.GetElement("Exercise_ID").Value.ToInt32();
+                ex.Exercise_Time = bd.GetElement("Exercise_Time").Value.ToInt32();
+                ex.Calorie_Count = bd.GetElement("Calorie_ Count").Value.ToInt32();
+                ex.Date = bd.GetElement("Exercise_Date").Value.ToUniversalTime();
+
+                res.Add(ex);
+            }
+
+
+
+            return res;
+
+
         }
 
         public static void Make_Regiment_Record(int Exercise_ID , WorkOut w)
@@ -291,12 +363,11 @@ namespace CreateExercises
             var database = dbClient.GetDatabase("ExerciseDB");
             var collB = database.GetCollection<BsonDocument>("Food_Diary");
 
-            DateTime dt = DateTime.Now;
-            DateTime ut = DateTime.SpecifyKind(dt, DateTimeKind.Utc);
+           
             var docb = new BsonDocument {
                                 { "Meal" ,f.Meal},
                                 {"Calorie_ Count", f.Calorie_Count },
-                                {"Consumption_Date", ut},
+                                {"Consumption_Date", f.Date},
                                 {"Meal_Description",f.Meal_Description }
 
                             };

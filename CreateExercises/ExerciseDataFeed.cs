@@ -164,7 +164,7 @@ namespace CreateExercises
             //Dictionary<int, String> res = new Dictionary<int, string>();
 
             var database = dbClient.GetDatabase("ExerciseDB");
-            var collection = database.GetCollection<BsonDocument>("Food_Log");
+            var collection = database.GetCollection<BsonDocument>("Food_Diary");
 
             //var filter = Builders<BsonDocument>.Filter.Eq("Exercise_ID", ExID);
 

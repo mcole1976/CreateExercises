@@ -88,7 +88,7 @@ namespace CreateExercises
             foreach (BsonDocument d in documents)
             {
                 string exName = d.GetElement("Exercise Type").Value.ToString();
-                Int64 _Id = d.GetElement("Exercise_Type_ID").Value.ToInt64();
+                Int64 _Id = d.GetElement("Exercise_Type_Id").Value.ToInt64();
 
                 int id = (int)_Id;
                 res.Add(id, exName);
@@ -213,7 +213,7 @@ namespace CreateExercises
 
                 ex.Exercise_ID = bd.GetElement("Exercise_ID").Value.ToInt32();
                 ex.Exercise_Time = bd.GetElement("Exercise_Time").Value.ToInt32();
-                ex.Calorie_Count = bd.GetElement("Calorie_ Count").Value.ToInt32();
+                ex.Calorie_Count = bd.GetElement("Calorie_Count").Value.ToInt32();
                 ex.Date = bd.GetElement("Exercise_Date").Value.ToUniversalTime();
 
                 res.Add(ex);
@@ -246,7 +246,7 @@ namespace CreateExercises
             collection.InsertOne(document);
         }
 
-        public static void Make_Exercise_Regiment(int Exercise_Type_ID, string name, int exTime)
+        public static void Make_Exercise_Regiment(int Exercise_Type_Id, string name, int exTime)
         {
             MongoClient dbClient = new MongoClient(Properties.Settings.Default.MongoDB);
             var database = dbClient.GetDatabase("ExerciseDB");
@@ -256,7 +256,7 @@ namespace CreateExercises
             var max = collection.Find(new BsonDocument()).Sort(new BsonDocument("Exercise_ID", -1)).FirstOrDefault();
             Int32 ex_ID = max.GetElement("Exercise_ID").Value.ToInt32();
             ex_ID++;
-            var document = new BsonDocument { { "Exercise_Type_Id", Exercise_Type_ID }, 
+            var document = new BsonDocument { { "Exercise_Type_Id", Exercise_Type_Id }, 
                 { "Exercise_ID", ex_ID} ,
                 { "Exercise Name", name} ,
                 { "Exercise_Time", exTime} };

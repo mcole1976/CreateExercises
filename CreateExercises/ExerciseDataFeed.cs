@@ -344,7 +344,7 @@ namespace CreateExercises
             DateTime ut = DateTime.SpecifyKind(dt, DateTimeKind.Utc);
             var docb = new BsonDocument {
                                 { "Exercise_ID" ,Ex_Id},
-                                {"Calorie_ Count", fn_SetCalCount(Type_ID, time) },
+                                {"Calorie_Count", fn_SetCalCount(Type_ID, time) },
                                 {"Exercise_Date", ut},
                                 {"Exercise_Time",time }
                                
@@ -366,7 +366,7 @@ namespace CreateExercises
            
             var docb = new BsonDocument {
                                 { "Meal" ,f.Meal},
-                                {"Calorie_ Count", f.Calorie_Count },
+                                {"Calorie_Count", f.Calorie_Count },
                                 {"Consumption_Date", f.Date},
                                 {"Meal_Description",f.Meal_Description }
 

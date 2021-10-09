@@ -363,11 +363,12 @@ namespace CreateExercises
             var database = dbClient.GetDatabase("ExerciseDB");
             var collB = database.GetCollection<BsonDocument>("Food_Diary");
 
-           
+            DateTime dt = DateTime.Now;
+            DateTime ut = DateTime.SpecifyKind(dt, DateTimeKind.Utc);
             var docb = new BsonDocument {
                                 { "Meal" ,f.Meal},
                                 {"Calorie_Count", f.Calorie_Count },
-                                {"Consumption_Date", f.Date},
+                                {"Consumption_Date", ut},
                                 {"Meal_Description",f.Meal_Description }
 
                             };

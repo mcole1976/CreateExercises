@@ -1,11 +1,9 @@
-﻿using System;
+﻿using ExerciseMethodShareDtNt;
+using MongoDB.Bson;
+using MongoDB.Driver;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ExerciseMethodShareDtNt;
-using MongoDB.Driver;
-using MongoDB.Bson;
 
 namespace CreateExercises
 {
@@ -36,7 +34,6 @@ namespace CreateExercises
                 //res.Add(id, exName);
             }
 
-
             return rb;
         }
 
@@ -63,14 +60,11 @@ namespace CreateExercises
                 res.Add(exA);
             }
 
-
             return res;
-
         }
 
         public static Dictionary<int, string> Exercise_Types_List()
         {
-
             MongoClient dbClient = new MongoClient(Properties.Settings.Default.MongoDB);
 
             Dictionary<int, String> res = new Dictionary<int, string>();
@@ -92,6 +86,26 @@ namespace CreateExercises
 
                 int id = (int)_Id;
                 res.Add(id, exName);
+            }
+
+            return res;
+        }
+
+        public static string ExerciseName(int ID)
+        {
+            MongoClient dbClient = new MongoClient(Properties.Settings.Default.MongoDB);
+            string res = "Not Available/ Deleted";
+
+            var database = dbClient.GetDatabase("ExerciseDB");
+            var collection = database.GetCollection<BsonDocument>("Exercises");
+
+            var filter = Builders<BsonDocument>.Filter.Eq("Exercise_ID", ID);
+
+            var Documents = collection.Find(filter).ToList();
+
+            foreach (BsonDocument d in Documents)
+            {
+                res = d.GetElement("Exercise Name").Value.ToString();
             }
 
             return res;
@@ -141,7 +155,6 @@ namespace CreateExercises
             {
                 WorkOut w = new WorkOut();
 
-
                 w.Id = bd.GetElement("Routine_id").Value.ToInt32();
                 w.Name = bd.GetElement("Exercise_Name").Value.ToString();
                 w.Time = bd.GetElement("Exercise_Time").Value.ToInt32();
@@ -149,14 +162,11 @@ namespace CreateExercises
                 res.Add(w);
             }
 
-
-
             return res;
         }
 
         public static List<Food_Log> FoodLogs()
-            {
-
+        {
             List<Food_Log> res = new List<Food_Log>();
 
             MongoClient dbClient = new MongoClient(Properties.Settings.Default.MongoDB);
@@ -174,7 +184,6 @@ namespace CreateExercises
             {
                 Food_Log f = new Food_Log();
 
-
                 f.Meal = bd.GetElement("Meal").Value.ToString();
                 f.Meal_Description = bd.GetElement("Meal_Description").Value.ToString();
                 f.Calorie_Count = bd.GetElement("Calorie_Count").Value.ToInt32();
@@ -183,16 +192,11 @@ namespace CreateExercises
                 res.Add(f);
             }
 
-
-
             return res;
-
-
         }
 
         public static List<Exercise_Log> ExerciseLogs()
         {
-
             List<Exercise_Log> res = new List<Exercise_Log>();
 
             MongoClient dbClient = new MongoClient(Properties.Settings.Default.MongoDB);
@@ -210,7 +214,6 @@ namespace CreateExercises
             {
                 Exercise_Log ex = new Exercise_Log();
 
-
                 ex.Exercise_ID = bd.GetElement("Exercise_ID").Value.ToInt32();
                 ex.Exercise_Time = bd.GetElement("Exercise_Time").Value.ToInt32();
                 ex.Calorie_Count = bd.GetElement("Calorie_Count").Value.ToInt32();
@@ -219,14 +222,10 @@ namespace CreateExercises
                 res.Add(ex);
             }
 
-
-
             return res;
-
-
         }
 
-        public static void Make_Regiment_Record(int Exercise_ID , WorkOut w)
+        public static void Make_Regiment_Record(int Exercise_ID, WorkOut w)
         {
             MongoClient dbClient = new MongoClient(Properties.Settings.Default.MongoDB);
             var database = dbClient.GetDatabase("ExerciseDB");
@@ -237,7 +236,6 @@ namespace CreateExercises
 
             var max = collEx.Find(new BsonDocument()).Sort(new BsonDocument("Exercise_ID", -1)).FirstOrDefault();
             Int32 ex_ID = max.GetElement("Exercise_ID").Value.ToInt32();
-            
 
             var document = new BsonDocument { { "Routine_id", w.Id },
                 { "Exercise_ID", ex_ID} ,
@@ -256,7 +254,7 @@ namespace CreateExercises
             var max = collection.Find(new BsonDocument()).Sort(new BsonDocument("Exercise_ID", -1)).FirstOrDefault();
             Int32 ex_ID = max.GetElement("Exercise_ID").Value.ToInt32();
             ex_ID++;
-            var document = new BsonDocument { { "Exercise_Type_Id", Exercise_Type_Id }, 
+            var document = new BsonDocument { { "Exercise_Type_Id", Exercise_Type_Id },
                 { "Exercise_ID", ex_ID} ,
                 { "Exercise Name", name} ,
                 { "Exercise_Time", exTime} };
@@ -274,7 +272,7 @@ namespace CreateExercises
             collectionA.DeleteMany(deleteFilter);
         }
 
-        public static void Make_Result_Base(WorkOut w,int Type_ID ,string ExName)
+        public static void Make_Result_Base(WorkOut w, int Type_ID, string ExName)
         {
             List<Given_Rule> gr = RuleList();
             Dictionary<int, string> exTypes = Exercise_Types_List();
@@ -297,7 +295,7 @@ namespace CreateExercises
 
             foreach (Given_Rule g in gr)
             {
-                if (w.Name.Contains(g.Exercise) && (g.Exercise_ID == Type_ID || Type_ID == 4 ))
+                if (w.Name.Contains(g.Exercise) && (g.Exercise_ID == Type_ID || Type_ID == 4))
                 {
                     ResultBase rb = new ResultBase();
                     rb.Match = true;
@@ -325,8 +323,6 @@ namespace CreateExercises
                     }
                 }
             }
-
-            
         }
 
         public static void Make_Log_Entry(int Type_ID, int Ex_Id, double time)
@@ -347,7 +343,6 @@ namespace CreateExercises
                                 {"Calorie_Count", fn_SetCalCount(Type_ID, time) },
                                 {"Exercise_Date", ut},
                                 {"Exercise_Time",time }
-                               
                             };
             collB.InsertOne(docb);
         }
@@ -355,8 +350,6 @@ namespace CreateExercises
         public static void Make_Food_Entry(ExerciseMethodShareDtNt.Food_Log f)
         {
             Dictionary<int, string> exTypes = Exercise_Types_List();
-
-            
 
             MongoClient dbClient = new MongoClient(Properties.Settings.Default.MongoDB);
 
@@ -370,12 +363,9 @@ namespace CreateExercises
                                 {"Calorie_Count", f.Calorie_Count },
                                 {"Consumption_Date", ut},
                                 {"Meal_Description",f.Meal_Description }
-
                             };
             collB.InsertOne(docb);
         }
-
-
 
         private static int fn_SetCalCount(int type_ID, double time)
         {
@@ -383,7 +373,7 @@ namespace CreateExercises
             if (type_ID == 4)
             {
                 ratio = Properties.Settings.Default.FB_Cal_Ratio;
-                    }
+            }
             else
             {
                 ratio = Properties.Settings.Default.EX_Cal_Ratio;

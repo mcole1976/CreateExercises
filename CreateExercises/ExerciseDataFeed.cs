@@ -212,13 +212,13 @@ namespace CreateExercises
 
             foreach (BsonDocument bd in Documents)
             {
-                Exercise_Log ex = new Exercise_Log();
-
-                ex.Exercise_ID = bd.GetElement("Exercise_ID").Value.ToInt32();
-                ex.Exercise_Time = bd.GetElement("Exercise_Time").Value.ToInt32();
-                ex.Calorie_Count = bd.GetElement("Calorie_Count").Value.ToInt32();
-                ex.Date = bd.GetElement("Exercise_Date").Value.ToUniversalTime();
-
+                Exercise_Log ex = new Exercise_Log
+                {
+                    Exercise_ID = bd.GetElement("Exercise_ID").Value.ToInt32(),
+                    Exercise_Time = bd.GetElement("Exercise_Time").Value.ToInt32(),
+                    Calorie_Count = bd.GetElement("Calorie_Count").Value.ToInt32(),
+                    Date = bd.GetElement("Exercise_Date").Value.ToUniversalTime()
+                };
                 res.Add(ex);
             }
 

@@ -111,6 +111,43 @@ namespace CreateExercises
             return res;
         }
 
+        public static List<string> MakeContainsList()
+        {
+            List<string> res = new List<string>();
+            MongoClient dbClient = new MongoClient(Properties.Settings.Default.MongoDB);
+
+            var database = dbClient.GetDatabase("ExerciseDB");
+            var collection = database.GetCollection<BsonDocument>("Routines");
+
+            var documents = collection.Find(new BsonDocument()).ToList();
+
+            foreach (BsonDocument d in documents)
+            {
+                res.Add(d.GetElement("Exercise_Name").Value.ToString());
+            }
+
+            return res.Distinct().ToList();
+        }
+
+
+        public static List<string> MakeFoodList()
+        {
+            List<string> res = new List<string>();
+            MongoClient dbClient = new MongoClient(Properties.Settings.Default.MongoDB);
+
+            var database = dbClient.GetDatabase("ExerciseDB");
+            var collection = database.GetCollection<BsonDocument>("Food_Diary");
+
+            var documents = collection.Find(new BsonDocument()).ToList();
+
+            foreach (BsonDocument d in documents)
+            {
+                res.Add(d.GetElement("Meal_Description").Value.ToString());
+            }
+
+            return res.Distinct().ToList();
+        }
+
         public static Dictionary<int, string> Routine_List(int Type_ID)
         {
             MongoClient dbClient = new MongoClient(Properties.Settings.Default.MongoDB);

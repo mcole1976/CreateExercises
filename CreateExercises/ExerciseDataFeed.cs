@@ -4,11 +4,70 @@ using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting.Contexts;
 
 namespace CreateExercises
 {
     public class ExerciseDataFeed
     {
+
+
+        public static List<ExerciseMethodShareDtNt.Task> Tasks()
+        {
+
+            List<ExerciseMethodShareDtNt.Task> r = new List<ExerciseMethodShareDtNt.Task>();
+            MongoClient dbClient = new MongoClient(Properties.Settings.Default.MongoDB);
+
+
+            var database = dbClient.GetDatabase("ExerciseDB");
+            //var collection = database.GetCollection<BsonDocument>("Exercises");
+            var collection = database.GetCollection<BsonDocument>("Tasks");
+            var documents = collection.Find(new BsonDocument()).ToList();
+
+            foreach (BsonDocument bd in documents)
+            {
+
+                {
+                    ExerciseMethodShareDtNt.Task t = new ExerciseMethodShareDtNt.Task();
+
+
+                    t.Id = bd.GetElement("TasK_ID").Value.ToInt32();
+                    t.Date = bd.GetElement("Time").Value.ToUniversalTime();
+                    r.Add(t);
+                };
+
+            }
+            return r;
+        }
+
+        public static List<ExerciseMethodShareDtNt.Goal> Goals()
+        {
+
+            List<ExerciseMethodShareDtNt.Goal> r = new List<ExerciseMethodShareDtNt.Goal>();
+            MongoClient dbClient = new MongoClient(Properties.Settings.Default.MongoDB);
+
+
+            var database = dbClient.GetDatabase("ExerciseDB");
+            //var collection = database.GetCollection<BsonDocument>("Exercises");
+            var collection = database.GetCollection<BsonDocument>("Goals");
+            var documents = collection.Find(new BsonDocument()).ToList();
+
+            foreach (BsonDocument bd in documents)
+            {
+
+                {
+                    ExerciseMethodShareDtNt.Goal g = new ExerciseMethodShareDtNt.Goal();
+
+
+                    g.Id = bd.GetElement("ID").Value.ToInt32();
+                    g.Name = bd.GetElement("Task").Value.ToString();
+                    r.Add(g);
+                };
+
+            }
+            return r;
+        }
+
         public static List<ExerciseMethodShareDtNt.ResultBase> ResultList()
         {
             List<ExerciseMethodShareDtNt.ResultBase> rb = new List<ResultBase>();
@@ -128,6 +187,7 @@ namespace CreateExercises
 
             return res.Distinct().ToList();
         }
+
 
 
         public static List<string> MakeFoodList()
@@ -418,5 +478,18 @@ namespace CreateExercises
 
             return (int)(time * ratio);
         }
+
+        public static bool setTask(Task t)
+        {
+            MongoClient dbClient = new MongoClient(Properties.Settings.Default.MongoDB);
+            var database = dbClient.GetDatabase("ExerciseDB");
+            var collection = database.GetCollection<BsonDocument>("Tasks"); 
+            var document = new BsonDocument { { "Task", t.Id },
+                { "Time", t.Date}  };
+            collection.InsertOne(document);
+
+            return true;
+        }
+
     }
 }

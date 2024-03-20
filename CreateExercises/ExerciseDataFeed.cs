@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Remoting.Contexts;
+using System.Security.Cryptography;
 
 namespace CreateExercises
 {
@@ -341,24 +342,6 @@ namespace CreateExercises
             collection.InsertOne(document);
         }
 
-        public static void Make_Exercise_Log(int id, DateTime t, int time,  int calories )
-        {
-
-            MongoClient dbClient = new MongoClient(Properties.Settings.Default.MongoDB);
-            var database = dbClient.GetDatabase("ExerciseDB");
-            var collection = database.GetCollection<BsonDocument>("Exercise_Log");
-            DateTime dt = DateTime.Now;
-            DateTime ut = DateTime.SpecifyKind(dt, DateTimeKind.Utc);
-            var document = new BsonDocument { { "Exercise_ID", id },
-                { "Calorie_Count", calories} ,
-                { "Exercise_Date", t} ,
-                { "Exercise_Time",ut} };
-            collection.InsertOne(document);
-
-
-
-        }
-
         public static void Make_Exercise_Regiment(int Exercise_Type_Id, string name, int exTime)
         {
             MongoClient dbClient = new MongoClient(Properties.Settings.Default.MongoDB);
@@ -375,6 +358,26 @@ namespace CreateExercises
                 { "Exercise_Time", exTime} };
             collection.InsertOne(document);
         }
+
+
+        public static void Make_Exercise_Regiment_Cal(int Exercise_Type_Id, string name, int exTime)
+        {
+            MongoClient dbClient = new MongoClient(Properties.Settings.Default.MongoDB);
+            var database = dbClient.GetDatabase("ExerciseDB");
+            var collection = database.GetCollection<BsonDocument>("Exercises");
+
+            //var documents = collection.Find(new BsonDocument()).ToList();
+            var max = collection.Find(new BsonDocument()).Sort(new BsonDocument("Exercise_ID", -1)).FirstOrDefault();
+            Int32 ex_ID = max.GetElement("Exercise_ID").Value.ToInt32();
+            ex_ID++;
+            var document = new BsonDocument { { "Exercise_Type_Id", Exercise_Type_Id },
+                { "Exercise_ID", ex_ID} ,
+                { "Exercise Name", name} ,
+                { "Exercise_Time", exTime} };
+            collection.InsertOne(document);
+        }
+
+
 
         public static void Delete_Exercise(int Exercise_ID)
         {
@@ -440,6 +443,42 @@ namespace CreateExercises
             }
         }
 
+
+
+        public static void Make_Log_Entry_Names(int calories, string n, int time)
+        {
+            //Dictionary<int, string> exTypes = Exercise_Types_List();
+
+            //string exType = (from exT in exTypes where exT.Key == Type_ID select exT.Value).FirstOrDefault();
+
+            MongoClient dbClient = new MongoClient(Properties.Settings.Default.MongoDB);
+
+            var database = dbClient.GetDatabase("ExerciseDB");
+            var collB = database.GetCollection<BsonDocument>("Exercise_Log");
+
+
+            var collection = database.GetCollection<BsonDocument>("Exercises");
+
+            var filter = Builders<BsonDocument>.Filter.Eq("Exercise Name", n);
+
+            var Documents = collection.Find(filter).ToList();
+            int Ex_Id = -2;
+            foreach (BsonDocument d in Documents)
+            {
+                Ex_Id = d.GetElement("Exercise_ID").Value.ToInt32();
+            }
+
+            DateTime dt = DateTime.Now;
+            DateTime ut = DateTime.SpecifyKind(dt, DateTimeKind.Utc);
+            var docb = new BsonDocument {
+                                { "Exercise_ID" ,Ex_Id},
+                                {"Calorie_Count", calories },
+                                {"Exercise_Date", ut},
+                                {"Exercise_Time",time }
+                            };
+            collB.InsertOne(docb);
+        }
+
         public static void Make_Log_Entry(int Type_ID, int Ex_Id, double time)
         {
             Dictionary<int, string> exTypes = Exercise_Types_List();
@@ -462,6 +501,8 @@ namespace CreateExercises
             collB.InsertOne(docb);
         }
 
+
+
         public static void Make_Food_Entry(ExerciseMethodShareDtNt.Food_Log f)
         {
             Dictionary<int, string> exTypes = Exercise_Types_List();
@@ -477,6 +518,27 @@ namespace CreateExercises
                                 { "Meal" ,f.Meal},
                                 {"Calorie_Count", f.Calorie_Count },
                                 {"Consumption_Date", ut},
+                                {"Meal_Description",f.Meal_Description }
+                            };
+            collB.InsertOne(docb);
+        }
+
+
+        public static void Make_Food_Entry_Dated(ExerciseMethodShareDtNt.Food_Log f)
+        {
+            Dictionary<int, string> exTypes = Exercise_Types_List();
+
+            MongoClient dbClient = new MongoClient(Properties.Settings.Default.MongoDB);
+
+            var database = dbClient.GetDatabase("ExerciseDB");
+            var collB = database.GetCollection<BsonDocument>("Food_Diary");
+
+            DateTime dt = DateTime.Now;
+            DateTime ut = DateTime.SpecifyKind(dt, DateTimeKind.Utc);
+            var docb = new BsonDocument {
+                                { "Meal" ,f.Meal},
+                                {"Calorie_Count", f.Calorie_Count },
+                                {"Consumption_Date", f.Date},
                                 {"Meal_Description",f.Meal_Description }
                             };
             collB.InsertOne(docb);

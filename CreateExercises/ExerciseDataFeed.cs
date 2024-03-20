@@ -341,6 +341,24 @@ namespace CreateExercises
             collection.InsertOne(document);
         }
 
+        public static void Make_Exercise_Log(int id, DateTime t, int time,  int calories )
+        {
+
+            MongoClient dbClient = new MongoClient(Properties.Settings.Default.MongoDB);
+            var database = dbClient.GetDatabase("ExerciseDB");
+            var collection = database.GetCollection<BsonDocument>("Exercise_Log");
+            DateTime dt = DateTime.Now;
+            DateTime ut = DateTime.SpecifyKind(dt, DateTimeKind.Utc);
+            var document = new BsonDocument { { "Exercise_ID", id },
+                { "Calorie_Count", calories} ,
+                { "Exercise_Date", t} ,
+                { "Exercise_Time",ut} };
+            collection.InsertOne(document);
+
+
+
+        }
+
         public static void Make_Exercise_Regiment(int Exercise_Type_Id, string name, int exTime)
         {
             MongoClient dbClient = new MongoClient(Properties.Settings.Default.MongoDB);

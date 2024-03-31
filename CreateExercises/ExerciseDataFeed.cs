@@ -534,11 +534,11 @@ namespace CreateExercises
             var collB = database.GetCollection<BsonDocument>("Food_Diary");
 
             DateTime dt = DateTime.Now;
-            DateTime ut = DateTime.SpecifyKind(dt, DateTimeKind.Utc);
+            DateTime ut = DateTime.SpecifyKind(f.Date, DateTimeKind.Utc);
             var docb = new BsonDocument {
                                 { "Meal" ,f.Meal},
                                 {"Calorie_Count", f.Calorie_Count },
-                                {"Consumption_Date", f.Date},
+                                {"Consumption_Date", ut},
                                 {"Meal_Description",f.Meal_Description }
                             };
             collB.InsertOne(docb);

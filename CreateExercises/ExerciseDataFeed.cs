@@ -32,7 +32,7 @@ namespace CreateExercises
                     ExerciseMethodShareDtNt.Task t = new ExerciseMethodShareDtNt.Task();
 
 
-                    t.Id = bd.GetElement("TasK_ID").Value.ToInt32();
+                    t.Id = bd.GetElement("Task").Value.ToInt32();
                     t.Date = bd.GetElement("Time").Value.ToUniversalTime();
                     r.Add(t);
                 };
@@ -224,11 +224,32 @@ namespace CreateExercises
 
             foreach (BsonDocument d in Documents)
             {
-                string exName = d.GetElement("Exercise Name").Value.ToString();
-                Int64 _Id = d.GetElement("Exercise_ID").Value.ToInt64();
+                try
+                {
+                    List<string> nonExs = new List<string>();
+                    nonExs.Add("Football");
+                    nonExs.Add("Cricket");
+                    nonExs.Add("Cycling");
+                    nonExs.Add("Daily Cycle");
+                    nonExs.Add("Golf");
+                    nonExs.Add("Walk");
+                    nonExs.Add("Walking");
 
-                int id = (int)_Id;
-                res.Add(id, exName);
+
+                    string exName = d.GetElement("Exercise Name").Value.ToString();
+                    Int64 _Id = d.GetElement("Exercise_ID").Value.ToInt64();
+                    bool doesNotExist = nonExs.Contains(exName, StringComparer.OrdinalIgnoreCase);
+                    if(!doesNotExist)
+                     {
+                        int id = (int)_Id;
+                        res.Add(id, exName);
+                    }
+
+                }
+                catch ( Exception ex  )
+                {
+                    Console.WriteLine(d.GetElement("Exercise_ID").Value.ToInt64().ToString());
+                }
             }
 
             return res;
@@ -292,7 +313,6 @@ namespace CreateExercises
 
             return res;
         }
-
         public static List<Exercise_Log> ExerciseLogs()
         {
             List<Exercise_Log> res = new List<Exercise_Log>();
@@ -322,7 +342,6 @@ namespace CreateExercises
 
             return res;
         }
-
         public static void Make_Regiment_Record(int Exercise_ID, WorkOut w)
         {
             MongoClient dbClient = new MongoClient(Properties.Settings.Default.MongoDB);
@@ -377,8 +396,6 @@ namespace CreateExercises
             collection.InsertOne(document);
         }
 
-
-
         public static void Delete_Exercise(int Exercise_ID)
         {
             MongoClient dbClient = new MongoClient(Properties.Settings.Default.MongoDB);
@@ -389,7 +406,6 @@ namespace CreateExercises
             collection.DeleteOne(deleteFilter);
             collectionA.DeleteMany(deleteFilter);
         }
-
         public static void Make_Result_Base(WorkOut w, int Type_ID, string ExName)
         {
             List<Given_Rule> gr = RuleList();
@@ -442,8 +458,6 @@ namespace CreateExercises
                 }
             }
         }
-
-
 
         public static void Make_Log_Entry_Names(int calories, string n, int time)
         {
@@ -533,12 +547,13 @@ namespace CreateExercises
             var database = dbClient.GetDatabase("ExerciseDB");
             var collB = database.GetCollection<BsonDocument>("Food_Diary");
 
-            DateTime dt = DateTime.Now;
-            DateTime ut = DateTime.SpecifyKind(f.Date, DateTimeKind.Utc);
+            DateTime dt = f.Date;
+            DateTimeOffset ut = new DateTimeOffset(f.Date, TimeSpan.FromHours(-6));
+            dt = ut.DateTime;
             var docb = new BsonDocument {
                                 { "Meal" ,f.Meal},
                                 {"Calorie_Count", f.Calorie_Count },
-                                {"Consumption_Date", ut},
+                                {"Consumption_Date", dt.ToLocalTime()},
                                 {"Meal_Description",f.Meal_Description }
                             };
             collB.InsertOne(docb);

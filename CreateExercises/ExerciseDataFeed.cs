@@ -1,6 +1,7 @@
 ﻿using ExerciseMethodShareDtNt;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,164 +14,8 @@ namespace CreateExercises
     {
 
 
-        public static List<ExerciseMethodShareDtNt.Task> Tasks()
-        {
 
-            List<ExerciseMethodShareDtNt.Task> r = new List<ExerciseMethodShareDtNt.Task>();
-            MongoClient dbClient = new MongoClient(Properties.Settings.Default.MongoDB);
-
-
-            var database = dbClient.GetDatabase("ExerciseDB");
-            //var collection = database.GetCollection<BsonDocument>("Exercises");
-            var collection = database.GetCollection<BsonDocument>("Tasks");
-            var documents = collection.Find(new BsonDocument()).ToList();
-
-            foreach (BsonDocument bd in documents)
-            {
-
-                {
-                    ExerciseMethodShareDtNt.Task t = new ExerciseMethodShareDtNt.Task();
-
-
-                    t.Id = bd.GetElement("Task").Value.ToInt32();
-                    t.Date = bd.GetElement("Time").Value.ToUniversalTime();
-                    r.Add(t);
-                };
-
-            }
-            return r;
-        }
-
-        public static List<ExerciseMethodShareDtNt.Goal> Goals()
-        {
-
-            List<ExerciseMethodShareDtNt.Goal> r = new List<ExerciseMethodShareDtNt.Goal>();
-            MongoClient dbClient = new MongoClient(Properties.Settings.Default.MongoDB);
-
-
-            var database = dbClient.GetDatabase("ExerciseDB");
-            //var collection = database.GetCollection<BsonDocument>("Exercises");
-            var collection = database.GetCollection<BsonDocument>("Goals");
-            var documents = collection.Find(new BsonDocument()).ToList();
-
-            foreach (BsonDocument bd in documents)
-            {
-
-                {
-                    ExerciseMethodShareDtNt.Goal g = new ExerciseMethodShareDtNt.Goal();
-
-
-                    g.Id = bd.GetElement("ID").Value.ToInt32();
-                    g.Name = bd.GetElement("Task").Value.ToString();
-                    r.Add(g);
-                };
-
-            }
-            return r;
-        }
-
-        public static List<ExerciseMethodShareDtNt.ResultBase> ResultList()
-        {
-            List<ExerciseMethodShareDtNt.ResultBase> rb = new List<ResultBase>();
-            MongoClient dbClient = new MongoClient(Properties.Settings.Default.MongoDB);
-
-            var database = dbClient.GetDatabase("ExerciseDB");
-            //var collection = database.GetCollection<BsonDocument>("Exercises");
-            var collection = database.GetCollection<BsonDocument>("ResultBase");
-            var documents = collection.Find(new BsonDocument()).ToList();
-
-            foreach (BsonDocument bd in documents)
-            {
-                ResultBase rBase = new ResultBase();
-                rBase.Exercise_Name = bd.GetElement("Exercise Name").Value.ToString();
-                rBase.Exercise_Type = bd.GetElement("Exercise Type").Value.ToString();
-                rBase.Action = bd.GetElement("Action").Value.ToString();
-                rBase.Name_Match = bd.GetElement("Name Match").Value.ToString();
-                rBase.Searched_exercise = bd.GetElement("Searched Exercise").Value.ToString();
-                rBase.Rank = (int)bd.GetElement("Rank").Value.ToInt64();
-                rBase.Match = bd.GetElement("Match").Value.ToBoolean();
-                rBase.FullMatch = bd.GetElement("Full Match").Value.ToBoolean();
-                rb.Add(rBase);
-                //res.Add(id, exName);
-            }
-
-            return rb;
-        }
-
-        public static List<Given_Rule> RuleList()
-        {
-            List<Given_Rule> res = new List<Given_Rule>();
-            MongoClient dbClient = new MongoClient(Properties.Settings.Default.MongoDB);
-
-            //Dictionary<int, String> res = new Dictionary<int, string>();
-
-            var database = dbClient.GetDatabase("ExerciseDB");
-            var collection = database.GetCollection<BsonDocument>("LawBase");
-
-            var documents = collection.Find(new BsonDocument()).ToList();
-            foreach (BsonDocument d in documents)
-            {
-                Given_Rule exA = new Given_Rule();
-
-                exA.Exercise = d.GetElement("Action").Value.ToString();
-                exA.Match_Case = d.GetElement("Match_Case").Value.ToString();
-                exA.Rank = (int)d.GetElement("Rank").Value.ToInt64();
-                exA.Exercise_ID = (int)d.GetElement("Exercise_Type_ID").Value.ToInt64();
-                //res.Add(id, exName);
-                res.Add(exA);
-            }
-
-            return res;
-        }
-
-        public static Dictionary<int, string> Exercise_Types_List()
-        {
-            MongoClient dbClient = new MongoClient(Properties.Settings.Default.MongoDB);
-
-            Dictionary<int, String> res = new Dictionary<int, string>();
-
-            var database = dbClient.GetDatabase("ExerciseDB");
-            var collection = database.GetCollection<BsonDocument>("ExerciseType");
-
-            var documents = collection.Find(new BsonDocument()).ToList();
-
-            //int t1 = (int)ExerciseTime.Ten;
-
-            //double p = (double)t1;
-            //p = Math.Pow(p, 2.00);
-
-            foreach (BsonDocument d in documents)
-            {
-                string exName = d.GetElement("Exercise Type").Value.ToString();
-                Int64 _Id = d.GetElement("Exercise_Type_Id").Value.ToInt64();
-
-                int id = (int)_Id;
-                res.Add(id, exName);
-            }
-
-            return res;
-        }
-
-        public static string ExerciseName(int ID)
-        {
-            MongoClient dbClient = new MongoClient(Properties.Settings.Default.MongoDB);
-            string res = "Not Available/ Deleted";
-
-            var database = dbClient.GetDatabase("ExerciseDB");
-            var collection = database.GetCollection<BsonDocument>("Exercises");
-
-            var filter = Builders<BsonDocument>.Filter.Eq("Exercise_ID", ID);
-
-            var Documents = collection.Find(filter).ToList();
-
-            foreach (BsonDocument d in Documents)
-            {
-                res = d.GetElement("Exercise Name").Value.ToString();
-            }
-
-            return res;
-        }
-
+        #region List Calls
         public static List<string> MakeContainsList()
         {
             List<string> res = new List<string>();
@@ -188,9 +33,6 @@ namespace CreateExercises
 
             return res.Distinct().ToList();
         }
-
-
-
         public static List<string> MakeFoodList()
         {
             List<string> res = new List<string>();
@@ -208,7 +50,6 @@ namespace CreateExercises
 
             return res.Distinct().ToList();
         }
-
         public static Dictionary<int, string> Routine_List(int Type_ID)
         {
             MongoClient dbClient = new MongoClient(Properties.Settings.Default.MongoDB);
@@ -254,7 +95,6 @@ namespace CreateExercises
 
             return res;
         }
-
         public static List<WorkOut> WorkOut_Regiment(int ExID)
         {
             List<WorkOut> res = new List<WorkOut>();
@@ -283,7 +123,6 @@ namespace CreateExercises
 
             return res;
         }
-
         public static List<Food_Log> FoodLogs()
         {
             List<Food_Log> res = new List<Food_Log>();
@@ -311,6 +150,31 @@ namespace CreateExercises
                 res.Add(f);
             }
 
+            return res;
+        }
+        public static List<FoodAll> FoodLogsBson(int tFrame)
+        {
+            List<FoodAll> res = new List<FoodAll>();
+            MongoClient dbClient = new MongoClient(Properties.Settings.Default.MongoDB);
+            var database = dbClient.GetDatabase("ExerciseDB");
+            var collection = database.GetCollection<BsonDocument>("Food_Diary");
+            DateTime currentDate = DateTime.UtcNow;
+            DateTime oneWeekAgo = currentDate.AddDays(-tFrame);
+            var filter = Builders<BsonDocument>.Filter.Gte("Consumption_Date", oneWeekAgo) &
+                         Builders<BsonDocument>.Filter.Lte("Consumption_Date", currentDate);
+            var lastWeekExercises = collection.Find(filter).ToList();
+            foreach (var document in lastWeekExercises)
+            {
+                FoodAll food = new FoodAll
+                {
+                    Id = document.GetElement("_id").Value.ToString(),
+                    Meal = document.GetElement("Meal").Value.ToString(),
+                    MealDescription = document.GetElement("Meal_Description").Value.ToString(),
+                    CalorieCount = document.GetElement("Calorie_Count").Value.ToInt32(),
+                    ConsumptionDate = document.GetElement("Consumption_Date").Value.ToUniversalTime()
+                };
+                res.Add(food);
+            }
             return res;
         }
         public static List<Exercise_Log> ExerciseLogs()
@@ -342,6 +206,193 @@ namespace CreateExercises
 
             return res;
         }
+        public static List<ExerciseAll> JSONExerciseAll(int tFrame)
+        {
+            List<ExerciseAll> res = new List<ExerciseAll>();
+            MongoClient dbClient = new MongoClient(Properties.Settings.Default.MongoDB);
+
+            var database = dbClient.GetDatabase("ExerciseDB");
+            var collection = database.GetCollection<BsonDocument>("Exercise_Log");
+
+            DateTime currentDate = DateTime.UtcNow;
+            DateTime oneWeekAgo = currentDate.AddDays(-tFrame);
+
+            var filter = Builders<BsonDocument>.Filter.Gte("Exercise_Date", oneWeekAgo) &
+                         Builders<BsonDocument>.Filter.Lte("Exercise_Date", currentDate);
+
+            var lastWeekExercises = collection.Find(filter).ToList();
+
+            foreach (var document in lastWeekExercises)
+            {
+                ExerciseAll exercise = new ExerciseAll
+                {
+                    Id = document.GetElement("_id").Value.ToString(),
+                    ExerciseId = document.GetElement("Exercise_ID").Value.ToInt32(),
+                    CalorieCount = document.GetElement("Calorie_Count").Value.ToInt32(),
+                    ExerciseDate = document.GetElement("Exercise_Date").Value.ToUniversalTime(),
+                    ExerciseTime = document.GetElement("Exercise_Time").Value.ToInt32()
+                };
+                res.Add(exercise);
+            }
+
+            return res;
+        }
+        public static List<ExerciseMethodShareDtNt.Task> Tasks()
+        {
+
+            List<ExerciseMethodShareDtNt.Task> r = new List<ExerciseMethodShareDtNt.Task>();
+            MongoClient dbClient = new MongoClient(Properties.Settings.Default.MongoDB);
+
+
+            var database = dbClient.GetDatabase("ExerciseDB");
+            //var collection = database.GetCollection<BsonDocument>("Exercises");
+            var collection = database.GetCollection<BsonDocument>("Tasks");
+            var documents = collection.Find(new BsonDocument()).ToList();
+
+            foreach (BsonDocument bd in documents)
+            {
+
+                {
+                    ExerciseMethodShareDtNt.Task t = new ExerciseMethodShareDtNt.Task();
+
+
+                    t.Id = bd.GetElement("Task").Value.ToInt32();
+                    t.Date = bd.GetElement("Time").Value.ToUniversalTime();
+                    r.Add(t);
+                };
+
+            }
+            return r;
+        }
+        public static List<ExerciseMethodShareDtNt.Goal> Goals()
+        {
+
+            List<ExerciseMethodShareDtNt.Goal> r = new List<ExerciseMethodShareDtNt.Goal>();
+            MongoClient dbClient = new MongoClient(Properties.Settings.Default.MongoDB);
+
+
+            var database = dbClient.GetDatabase("ExerciseDB");
+            //var collection = database.GetCollection<BsonDocument>("Exercises");
+            var collection = database.GetCollection<BsonDocument>("Goals");
+            var documents = collection.Find(new BsonDocument()).ToList();
+
+            foreach (BsonDocument bd in documents)
+            {
+
+                {
+                    ExerciseMethodShareDtNt.Goal g = new ExerciseMethodShareDtNt.Goal();
+
+
+                    g.Id = bd.GetElement("ID").Value.ToInt32();
+                    g.Name = bd.GetElement("Task").Value.ToString();
+                    r.Add(g);
+                };
+
+            }
+            return r;
+        }
+        public static List<ExerciseMethodShareDtNt.ResultBase> ResultList()
+        {
+            List<ExerciseMethodShareDtNt.ResultBase> rb = new List<ResultBase>();
+            MongoClient dbClient = new MongoClient(Properties.Settings.Default.MongoDB);
+
+            var database = dbClient.GetDatabase("ExerciseDB");
+            //var collection = database.GetCollection<BsonDocument>("Exercises");
+            var collection = database.GetCollection<BsonDocument>("ResultBase");
+            var documents = collection.Find(new BsonDocument()).ToList();
+
+            foreach (BsonDocument bd in documents)
+            {
+                ResultBase rBase = new ResultBase();
+                rBase.Exercise_Name = bd.GetElement("Exercise Name").Value.ToString();
+                rBase.Exercise_Type = bd.GetElement("Exercise Type").Value.ToString();
+                rBase.Action = bd.GetElement("Action").Value.ToString();
+                rBase.Name_Match = bd.GetElement("Name Match").Value.ToString();
+                rBase.Searched_exercise = bd.GetElement("Searched Exercise").Value.ToString();
+                rBase.Rank = (int)bd.GetElement("Rank").Value.ToInt64();
+                rBase.Match = bd.GetElement("Match").Value.ToBoolean();
+                rBase.FullMatch = bd.GetElement("Full Match").Value.ToBoolean();
+                rb.Add(rBase);
+                //res.Add(id, exName);
+            }
+
+            return rb;
+        }
+        public static List<Given_Rule> RuleList()
+        {
+            List<Given_Rule> res = new List<Given_Rule>();
+            MongoClient dbClient = new MongoClient(Properties.Settings.Default.MongoDB);
+
+            //Dictionary<int, String> res = new Dictionary<int, string>();
+
+            var database = dbClient.GetDatabase("ExerciseDB");
+            var collection = database.GetCollection<BsonDocument>("LawBase");
+
+            var documents = collection.Find(new BsonDocument()).ToList();
+            foreach (BsonDocument d in documents)
+            {
+                Given_Rule exA = new Given_Rule();
+
+                exA.Exercise = d.GetElement("Action").Value.ToString();
+                exA.Match_Case = d.GetElement("Match_Case").Value.ToString();
+                exA.Rank = (int)d.GetElement("Rank").Value.ToInt64();
+                exA.Exercise_ID = (int)d.GetElement("Exercise_Type_ID").Value.ToInt64();
+                //res.Add(id, exName);
+                res.Add(exA);
+            }
+
+            return res;
+        }
+        #endregion
+        #region auxillary
+        public static Dictionary<int, string> Exercise_Types_List()
+        {
+            MongoClient dbClient = new MongoClient(Properties.Settings.Default.MongoDB);
+
+            Dictionary<int, String> res = new Dictionary<int, string>();
+
+            var database = dbClient.GetDatabase("ExerciseDB");
+            var collection = database.GetCollection<BsonDocument>("ExerciseType");
+
+            var documents = collection.Find(new BsonDocument()).ToList();
+
+            //int t1 = (int)ExerciseTime.Ten;
+
+            //double p = (double)t1;
+            //p = Math.Pow(p, 2.00);
+
+            foreach (BsonDocument d in documents)
+            {
+                string exName = d.GetElement("Exercise Type").Value.ToString();
+                Int64 _Id = d.GetElement("Exercise_Type_Id").Value.ToInt64();
+
+                int id = (int)_Id;
+                res.Add(id, exName);
+            }
+
+            return res;
+        }
+        public static string ExerciseName(int ID)
+        {
+            MongoClient dbClient = new MongoClient(Properties.Settings.Default.MongoDB);
+            string res = "Not Available/ Deleted";
+
+            var database = dbClient.GetDatabase("ExerciseDB");
+            var collection = database.GetCollection<BsonDocument>("Exercises");
+
+            var filter = Builders<BsonDocument>.Filter.Eq("Exercise_ID", ID);
+
+            var Documents = collection.Find(filter).ToList();
+
+            foreach (BsonDocument d in Documents)
+            {
+                res = d.GetElement("Exercise Name").Value.ToString();
+            }
+
+            return res;
+        }
+        #endregion
+        #region Amend and Make Data
         public static void Make_Regiment_Record(int Exercise_ID, WorkOut w)
         {
             MongoClient dbClient = new MongoClient(Properties.Settings.Default.MongoDB);
@@ -360,7 +411,6 @@ namespace CreateExercises
                 { "Exercise_Time",w.Time} };
             collection.InsertOne(document);
         }
-
         public static void Make_Exercise_Regiment(int Exercise_Type_Id, string name, int exTime)
         {
             MongoClient dbClient = new MongoClient(Properties.Settings.Default.MongoDB);
@@ -377,8 +427,6 @@ namespace CreateExercises
                 { "Exercise_Time", exTime} };
             collection.InsertOne(document);
         }
-
-
         public static void Make_Exercise_Regiment_Cal(int Exercise_Type_Id, string name, int exTime)
         {
             MongoClient dbClient = new MongoClient(Properties.Settings.Default.MongoDB);
@@ -395,7 +443,6 @@ namespace CreateExercises
                 { "Exercise_Time", exTime} };
             collection.InsertOne(document);
         }
-
         public static void Delete_Exercise(int Exercise_ID)
         {
             MongoClient dbClient = new MongoClient(Properties.Settings.Default.MongoDB);
@@ -458,7 +505,6 @@ namespace CreateExercises
                 }
             }
         }
-
         public static void Make_Log_Entry_Names(int calories, string n, int time)
         {
             //Dictionary<int, string> exTypes = Exercise_Types_List();
@@ -492,7 +538,6 @@ namespace CreateExercises
                             };
             collB.InsertOne(docb);
         }
-
         public static void Make_Log_Entry(int Type_ID, int Ex_Id, double time)
         {
             Dictionary<int, string> exTypes = Exercise_Types_List();
@@ -514,9 +559,6 @@ namespace CreateExercises
                             };
             collB.InsertOne(docb);
         }
-
-
-
         public static void Make_Food_Entry(ExerciseMethodShareDtNt.Food_Log f)
         {
             Dictionary<int, string> exTypes = Exercise_Types_List();
@@ -536,8 +578,6 @@ namespace CreateExercises
                             };
             collB.InsertOne(docb);
         }
-
-
         public static void Make_Food_Entry_Dated(ExerciseMethodShareDtNt.Food_Log f)
         {
             Dictionary<int, string> exTypes = Exercise_Types_List();
@@ -558,7 +598,6 @@ namespace CreateExercises
                             };
             collB.InsertOne(docb);
         }
-
         private static int fn_SetCalCount(int type_ID, double time)
         {
             double ratio = 0;
@@ -573,7 +612,6 @@ namespace CreateExercises
 
             return (int)(time * ratio);
         }
-
         public static bool setTask(Task t)
         {
             MongoClient dbClient = new MongoClient(Properties.Settings.Default.MongoDB);
@@ -585,6 +623,6 @@ namespace CreateExercises
 
             return true;
         }
-
+        #endregion
     }
 }

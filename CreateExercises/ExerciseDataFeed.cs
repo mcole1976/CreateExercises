@@ -230,7 +230,8 @@ namespace CreateExercises
                     ExerciseId = document.GetElement("Exercise_ID").Value.ToInt32(),
                     CalorieCount = document.GetElement("Calorie_Count").Value.ToInt32(),
                     ExerciseDate = document.GetElement("Exercise_Date").Value.ToUniversalTime(),
-                    ExerciseTime = document.GetElement("Exercise_Time").Value.ToInt32()
+                    ExerciseTime = document.GetElement("Exercise_Time").Value.ToInt32(),
+                    Exercise_Name = (ExerciseName(document.GetElement("Exercise_ID").Value.ToInt32()))
                 };
                 res.Add(exercise);
             }

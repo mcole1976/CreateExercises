@@ -624,6 +624,52 @@ namespace CreateExercises
 
             return true;
         }
+        public static async void updateFood(FoodAll f)
+        {
+            MongoClient dbClient = new MongoClient(Properties.Settings.Default.MongoDB);
+            var database = dbClient.GetDatabase("ExerciseDB");
+            var collection = database.GetCollection<BsonDocument>("Food_Diary");
+            //var filter = Builders<BsonDocument>.Filter.Eq("Meal", f.Meal);
+            var filter = new BsonDocument("_id", new ObjectId(f.Id));
+            var update = new BsonDocument
+            {
+                { "$set", new BsonDocument
+                    {
+                        { "Meal", f.Meal },
+                        { "Meal_Description", f.Meal_Description },
+                        { "Calorie_Count", f.Calorie_Count },
+                        { "Date", f.Date }
+                    }
+                }
+            };
+
+            var result = await collection.UpdateOneAsync(filter, update);
+
+            
+        }
+        public static async void updateExercise(ExerciseAll ex)
+        {
+            MongoClient dbClient = new MongoClient(Properties.Settings.Default.MongoDB);
+            var database = dbClient.GetDatabase("ExerciseDB");
+            var collection = database.GetCollection<BsonDocument>("Exercise_Log");
+            //var filter = Builders<BsonDocument>.Filter.Eq("Meal", f.Meal);
+            var filter = new BsonDocument("_id", new ObjectId(ex.Id));
+            var update = new BsonDocument
+            {
+                { "$set", new BsonDocument
+                    {
+                        
+                        { "Calorie_Count", ex.Calorie_Count },
+                        { "Date", ex.Date }
+                    }
+                }
+            };
+
+            var result = await collection.UpdateOneAsync(filter, update);
+
+
+        }
+
         #endregion
     }
 }

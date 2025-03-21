@@ -638,13 +638,14 @@ namespace CreateExercises
                         { "Meal", f.Meal },
                         { "Meal_Description", f.Meal_Description },
                         { "Calorie_Count", f.Calorie_Count },
-                        { "Date", f.Date }
+                        { "Consumption_Date", f.Date }
                     }
                 }
             };
 
             var result = await collection.UpdateOneAsync(filter, update);
 
+            
             
         }
         public static async void updateExercise(ExerciseAll ex)
@@ -660,7 +661,7 @@ namespace CreateExercises
                     {
                         
                         { "Calorie_Count", ex.Calorie_Count },
-                        { "Date", ex.Date }
+                        { "Consumption_Date", ex.Date }
                     }
                 }
             };
